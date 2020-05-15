@@ -1,0 +1,8 @@
+*.iml
+**/.vscode
+**/go.sum
+.idea/
+.aws-sam/
+node_modules/
+packaged.yaml
+samconfig.toml
