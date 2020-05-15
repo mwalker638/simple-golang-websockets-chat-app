@@ -1,6 +1,12 @@
 # simple-golang-websockets-chat-app
 
-This is the code and template for the simple-golang-websocket-chat-app.  There are three functions contained within the directories and a SAM template that wires them up to a DynamoDB table and provides the minimal set of permissions needed to run the app:
+I was looking for a exmaple of deploying and managing a [AWS Lambda](https://aws.amazon.com/lambda/) based app written in [Go](http://golang.org) that is deployed via [AWS SAM](https://aws.amazon.com/serverless/sam/) and uses WebSockets.  The closest I found was [simple-websockets-chat-app](https://github.com/aws-samples/simple-websockets-chat-app), which did all of the above but in Node.js.
+
+This repository represents a fork of [simple-websockets-chat-app](https://github.com/aws-samples/simple-websockets-chat-app) but with the Lambda functions written as a single Go package.
+
+I share incase it might be useful to anyone else looking to go down this path.
+
+There is a single golang function which handles the the logic of the simple WebSocket which uses DynamoDB for its persistent storage.  A SAM template is used for ease of deployment and management.
 
 ```
 .
@@ -8,9 +14,6 @@ This is the code and template for the simple-golang-websocket-chat-app.  There a
 ├── chatapp                  <-- Golang source code for websocket chatapp
 └── template.yaml            <-- SAM template for Lambda Functions and DDB
 ```
-
-
-It should be noted that this is a modified version of the sample app [simple-golang-websockets-chat-app](https://github.com/aws-samples/simple-websockets-chat-app).  The primary changes were implementing the Lambda code in golang rather then the original Node.js code.
 
 
 # Deploying to your account
