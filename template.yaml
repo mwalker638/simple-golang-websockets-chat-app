@@ -1,21 +1,18 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  simple-websockets-chat-app
+  simple-golang-websockets-chat-app
 
-  SAM Template for simple-websockets-chat-app that has the DynamoDB table and Lambda
-  functions needed to demonstrate the Websocket protocol on API Gateway.
-
-Parameters:
-  TableName:
+  SAM Template for simple-golang-websockets-chat-app that has the DynamoDB table and Lambda
+  functions needed to demonstrate the Websocket protocol on API Gateway from golang.
+Parameters: 
+  DeploymentStage: 
     Type: String
-    Default: 'simplechat_connections'
-    Description: (Required) The name of the new DynamoDB to store connection identifiers for each connected clients. Minimum 3 characters
-    MinLength: 3
-    MaxLength: 50
-    AllowedPattern: ^[A-Za-z_]+$
-    ConstraintDescription: 'Required. Can be characters and underscore only. No numbers or special characters allowed.'
-
+    Default: prod
+    AllowedValues: 
+      - prod
+      - dev
+    Description: Enter prod or dev
 Resources:
   SimpleChatWebSocket:
     Type: AWS::ApiGatewayV2::Api
@@ -115,8 +112,8 @@ Resources:
   Stage:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
-      StageName: Prod
-      Description: Prod Stage
+      StageName: !Ref DeploymentStage
+      Description: !Ref DeploymentStage
       DeploymentId: !Ref Deployment
       ApiId: !Ref SimpleChatWebSocket
   ConnectionsTable:
@@ -133,7 +130,7 @@ Resources:
         WriteCapacityUnits: 5
       SSESpecification:
         SSEEnabled: True
-      TableName: !Ref TableName
+      TableName: !Sub 'wsconnections-${DeploymentStage}'
   ChatAppFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -143,17 +140,16 @@ Resources:
       Runtime: go1.x
       Environment:
         Variables:
-          TABLE_NAME: !Ref TableName
+          TABLE_NAME: !Ref ConnectionsTable
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref TableName
+          TableName: !Ref ConnectionsTable
       - Statement:
         - Effect: Allow
           Action:
           - 'execute-api:ManageConnections'
           Resource:
           - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*'
-
   ChatAppPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
